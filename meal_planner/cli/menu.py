@@ -2,6 +2,7 @@ from meal_planner.database import SessionLocal
 from meal_planner.models.recipe import Recipe
 from meal_planner.models.meal_plan import MealPlan
 from meal_planner.utilities.grocery_list import generate_grocery_list_from_plan
+from meal_planner.seed.seed_data import seed_sample_data
 
 def main_menu():
     print("\nPlease choose an option:")
@@ -10,9 +11,10 @@ def main_menu():
     print("3. Plan meals for the week")
     print("4. View weekly meal plan")
     print("5. Generate grocery list")
-    print("6. Exit")
+    print("6. Seed sample data") 
+    print("7. Exit")
 
-    choice = input("Enter your choice (1-6): ").strip()
+    choice = input("Enter your choice (1-7): ").strip()
 
     if choice == "1":
         view_all_recipes()
@@ -25,6 +27,8 @@ def main_menu():
     elif choice == "5":
         generate_grocery_list()
     elif choice == "6":
+        seed_sample_data()
+    elif choice == "7":
         print("Exiting... Goodbye!")
         exit()
     else:
@@ -136,4 +140,7 @@ def generate_grocery_list():
     except Exception as e:
         print(f"\n❌ Error generating grocery list: {e}")
     finally:
-        session.close()       
+        session.close()  
+
+
+    
