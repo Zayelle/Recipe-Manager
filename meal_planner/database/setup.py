@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-
+from meal_planner.models.base import base
 # Define the database URL (you can change 'meal_planner.db' to something else if needed)
 DATABASE_URL = "sqlite:///meal_planner.db"
 
