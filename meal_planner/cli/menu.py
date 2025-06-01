@@ -1,3 +1,8 @@
+from meal_planner.database import SessionLocal
+from meal_planner.models.recipe import Recipe
+from meal_planner.models.meal_plan import MealPlan
+from meal_planner.utilities.grocery_list import generate_grocery_list_from_plan
+
 def main_menu():
     print("\nPlease choose an option:")
     print("1. View all recipes")
@@ -25,27 +30,110 @@ def main_menu():
     else:
         print("Invalid choice. Please try again.")
 
-
+# ✅ View All Recipes
 def view_all_recipes():
-    print("\n[Placeholder] Showing all recipes...")
-    # TODO: Connect to DB and list recipes
+    session = SessionLocal()
+    print("\n📖 All Recipes:")
+    try:
+        recipes = session.query(Recipe).all()
+        if not recipes:
+            print("No recipes found.")
+        else:
+            for recipe in recipes:
+                print(f"\n📝 {recipe.name}\nInstructions: {recipe.instructions or 'N/A'}")
+    except Exception as e:
+        print(f"❌ Error fetching recipes: {e}")
+    finally:
+        session.close()
 
 
+# ✅ Add a New Recipe
 def add_new_recipe():
-    print("\n[Placeholder] Add a new recipe...")
-    # TODO: Prompt for recipe details and save to DB
+    print("\n➕ Add a New Recipe")
+    name = input("Enter recipe name: ").strip()
+    instructions = input("Enter cooking instructions: ").strip()
 
+    if not name:
+        print("❌ Recipe name cannot be empty.")
+        return
+
+    session = SessionLocal()
+    new_recipe = Recipe(name=name, instructions=instructions)
+
+    try:
+        session.add(new_recipe)
+        session.commit()
+        print(f"✅ Recipe '{new_recipe.name}' added successfully.")
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Failed to add recipe: {e}")
+    finally:
+        session.close()
 
 def plan_meals():
-    print("\n[Placeholder] Plan meals for the week...")
-    # TODO: Add logic for meal planning
+    session = SessionLocal()
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+    try:
+        recipes = session.query(Recipe).all()
+        if not recipes:
+            print("❌ No recipes available. Add some recipes first.")
+            return
+
+        print("\n📅 Plan Your Week:")
+        for day in days:
+            print(f"\n--- {day} ---")
+            for idx, recipe in enumerate(recipes, start=1):
+                print(f"{idx}. {recipe.name}")
+            choice = input(f"Select a recipe number for {day} (or leave blank to skip): ").strip()
+
+            if choice.isdigit():
+                index = int(choice) - 1
+                if 0 <= index < len(recipes):
+                    selected_recipe = recipes[index]
+                    plan = MealPlan(day=day, recipe=selected_recipe)
+                    session.add(plan)
+
+        session.commit()
+        print("\n✅ Weekly meal plan saved.")
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Error planning meals: {e}")
+    finally:
+        session.close()
 
 def view_weekly_plan():
-    print("\n[Placeholder] View your weekly meal plan...")
-    # TODO: Retrieve and display the meal plan
-
+    session = SessionLocal()
+    try:
+        plans = session.query(MealPlan).order_by(MealPlan.day).all()
+        if not plans:
+            print("\n📭 No meal plan found.")
+        else:
+            print("\n📆 Weekly Meal Plan:")
+            for plan in plans:
+                print(f"{plan.day}: {plan.recipe.name}")
+    except Exception as e:
+        print(f"❌ Error viewing plan: {e}")
+    finally:
+        session.close()
 
 def generate_grocery_list():
-    print("\n[Placeholder] Generate grocery list from plan...")
-    # TODO: Generate shopping list based on meals
+    session = SessionLocal()
+    try:
+        meal_plans = session.query(MealPlan).all()
+
+        if not meal_plans:
+            print("\n⚠️ No meal plans found. Please plan your meals first.")
+            return
+
+        recipes = list({plan.recipe for plan in meal_plans})
+        grocery_list = generate_grocery_list_from_plan(recipes)
+
+        print("\n🛒 Grocery List:")
+        for ingredient, quantities in grocery_list.items():
+            print(f"- {ingredient}: {', '.join(quantities)}")
+
+    except Exception as e:
+        print(f"\n❌ Error generating grocery list: {e}")
+    finally:
+        session.close()       

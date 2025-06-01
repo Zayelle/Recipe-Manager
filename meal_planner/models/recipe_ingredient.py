@@ -1,4 +1,3 @@
-# meal_planner/models/recipe_ingredient.py
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from meal_planner.models.base import Base
 

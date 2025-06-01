@@ -4,17 +4,20 @@ def generate_grocery_list_from_plan(meal_plan):
     by aggregating all required ingredients.
 
     :param meal_plan: List of Recipe objects
-    :return: Dict with ingredient names as keys and quantities as values
+    :return: Dict with ingredient names as keys and list of quantities
     """
     grocery_list = {}
 
     for recipe in meal_plan:
         for ingredient in recipe.ingredients:
             name = ingredient.name
-            qty = ingredient.quantity
+            qty = ingredient.quantity or "unspecified"
+
             if name in grocery_list:
                 grocery_list[name].append(qty)
             else:
                 grocery_list[name] = [qty]
 
     return grocery_list
+
+

@@ -1,4 +1,3 @@
-# meal_planner/models/meal_plan.py
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from meal_planner.models.base import Base
@@ -10,4 +9,6 @@ class MealPlan(Base):
     day = Column(String, nullable=False)
     recipe_id = Column(Integer, ForeignKey('recipes.id'), nullable=False)
 
-    recipe = relationship('Recipe')
+    recipe = relationship('Recipe',backref='meal_plans')
+    def __repr__(self):
+        return f"<MealPlan(id=(day='{self.day}', recipe={self.recipe_name})>"

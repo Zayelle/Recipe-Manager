@@ -1,4 +1,3 @@
-# meal_planner/models/recipe.py
 from sqlalchemy import Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 from meal_planner.models.base import Base
