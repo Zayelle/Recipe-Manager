@@ -27,7 +27,7 @@ def main_menu():
     elif choice == "5":
         generate_grocery_list()
     elif choice == "6":
-        seed_sample_data()
+        seed_data_command()
     elif choice == "7":
         print("Exiting... Goodbye!")
         exit()
@@ -142,5 +142,16 @@ def generate_grocery_list():
     finally:
         session.close()  
 
+def seed_data_command():
+    session = SessionLocal()
+    try:
+        seed_sample_data(session)
+        print("✅ Sample data seeded successfully.")
+    except Exception as e:
+        print(f"❌ Error seeding sample data: {e}")
+    finally:
+        session.close()
+    
+        
 
     

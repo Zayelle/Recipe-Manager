@@ -10,12 +10,12 @@ engine = create_engine(DATABASE_URL, echo=False)
 # Create a configured session class
 SessionLocal = sessionmaker(bind=engine)
 
-# Base class for models to inherit
-Base = declarative_base()
-
 def init_db():
     """
     Import all models and create tables.
     """
-    from meal_planner.models import recipe, ingredient, recipe_ingredient, meal_plan  # type: ignore
+    from meal_planner.models import recipe as _recipe, ingredient as _ingredient, recipe_ingredient as _recipe_ingredient, meal_plan as _meal_plan
+
+    print("📦 Initializing database...")
     Base.metadata.create_all(bind=engine)
+    print("✅ Tables created.")
