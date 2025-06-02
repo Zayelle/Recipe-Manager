@@ -1,4 +1,5 @@
 import re
+import csv
 from typing import List, Dict, Union
 from collections import defaultdict
 from meal_planner.database.setup import SessionLocal
@@ -74,3 +75,22 @@ def generate_grocery_list():
         print(f"\n❌ Error generating grocery list: {e}")
     finally:
         session.close()
+
+def export_grocery_list_to_csv(grocery_list, filename="grocery_list.csv"):
+    """
+    Export the grocery list to a CSV file.
+
+    :param grocery_list: Dictionary {ingredient: quantity}
+    :param filename: Output CSV file path
+    """
+    try:
+        with open(filename, "w", newline="") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["Ingredient", "Quantity"])
+
+            for ingredient, quantity in grocery_list.items():
+                writer.writerow([ingredient, quantity])
+
+        print(f"\n✅ Grocery list exported to {filename}")
+    except Exception as e:
+        print(f"\n❌ Failed to export grocery list: {e}")

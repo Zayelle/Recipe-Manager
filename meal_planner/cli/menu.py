@@ -1,8 +1,12 @@
 from meal_planner.database import SessionLocal
 from meal_planner.models.recipe import Recipe
 from meal_planner.models.meal_plan import MealPlan
-from meal_planner.utilities.grocery_list import generate_grocery_list_from_plan
+from meal_planner.models.ingredient import Ingredient
+from meal_planner.utilities.grocery_list import generate_grocery_list_from_plan, export_grocery_list_to_csv
 from meal_planner.seed.seed_data import seed_sample_data
+from meal_planner.utilities.view_data import export_meal_plan_to_csv
+from meal_planner.utilities.view_data import export_recipes_to_csv
+from meal_planner.utilities.view_data import export_ingredients_to_csv
 
 def main_menu():
     print("\nPlease choose an option:")
@@ -29,6 +33,8 @@ def main_menu():
     elif choice == "6":
         seed_data_command()
     elif choice == "7":
+        view_all_ingredients()
+    elif choice == "8":
         print("Exiting... Goodbye!")
         exit()
     else:
@@ -45,6 +51,11 @@ def view_all_recipes():
         else:
             for recipe in recipes:
                 print(f"\n📝 {recipe.name}\nInstructions: {recipe.instructions or 'N/A'}")
+
+            export = input("\n📤 Export recipes to CSV? (y/n): ").strip().lower()
+            if export == "y":
+                export_recipes_to_csv(recipes)
+
     except Exception as e:
         print(f"❌ Error fetching recipes: {e}")
     finally:
@@ -116,6 +127,12 @@ def view_weekly_plan():
             print("\n📆 Weekly Meal Plan:")
             for plan in plans:
                 print(f"{plan.day}: {plan.recipe.name}")
+
+            # Offer export
+            export = input("\n📤 Export meal plan to CSV? (y/n): ").strip().lower()
+            if export == "y":
+                export_meal_plan_to_csv(plans)
+
     except Exception as e:
         print(f"❌ Error viewing plan: {e}")
     finally:
@@ -134,13 +151,19 @@ def generate_grocery_list():
         grocery_list = generate_grocery_list_from_plan(recipes)
 
         print("\n🛒 Grocery List:")
-        for ingredient, quantities in grocery_list.items():
-            print(f"- {ingredient}: {', '.join(quantities)}")
+        for ingredient, quantity in grocery_list.items():
+            print(f"- {ingredient}: {quantity}")
+
+        # Ask if user wants to export to CSV
+        export = input("\n📤 Export grocery list to CSV? (y/n): ").strip().lower()
+        if export == "y":
+            export_grocery_list_to_csv(grocery_list)
 
     except Exception as e:
         print(f"\n❌ Error generating grocery list: {e}")
     finally:
-        session.close()  
+        session.close()
+
 
 def seed_data_command():
     session = SessionLocal()
@@ -152,6 +175,23 @@ def seed_data_command():
     finally:
         session.close()
     
-        
+def view_all_ingredients():
+    session = SessionLocal()
+    try:
+        ingredients = session.query(Ingredient).all()
+        if not ingredients:
+            print("\n📭 No ingredients found.")
+        else:
+            print("\n🧂 All Ingredients:")
+            for ing in ingredients:
+                print(f"- {ing.name}: {ing.quantity or 'unspecified'}")
+
+            export = input("\n📤 Export ingredients to CSV? (y/n): ").strip().lower()
+            if export == "y":
+                export_ingredients_to_csv(ingredients)
+    except Exception as e:
+        print(f"❌ Error fetching ingredients: {e}")
+    finally:
+        session.close()     
 
     
