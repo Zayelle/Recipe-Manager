@@ -7,7 +7,7 @@ class Recipe(Base):
     __tablename__ = 'recipes'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     meal_type = Column(String)
     instructions = Column(Text)
 
@@ -16,3 +16,6 @@ class Recipe(Base):
         secondary=recipe_ingredient,
         back_populates='recipes'
     )
+
+    def __repr__(self):
+        return f"<Recipe(id={self.id}, name='{self.name}', meal_type='{self.meal_type}', instructions='{self.instructions[:30]}...')>"

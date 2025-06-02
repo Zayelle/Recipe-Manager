@@ -19,6 +19,7 @@ def setup_database():
 
 def main():
     print("Welcome to the Recipe Manager & Meal Planner CLI!")
+    setup_database()  # Initialize the database and seed data
     while True:
         try:
             main_menu()

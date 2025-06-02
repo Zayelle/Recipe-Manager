@@ -10,5 +10,6 @@ class MealPlan(Base):
     recipe_id = Column(Integer, ForeignKey('recipes.id'), nullable=False)
 
     recipe = relationship('Recipe',backref='meal_plans')
+
     def __repr__(self):
-        return f"<MealPlan(id=(day='{self.day}', recipe={self.recipe_name})>"
+        return f"<MealPlan(id={self.id}, day='{self.day}', recipe_id={self.recipe_id})>"
