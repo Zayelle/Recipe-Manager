@@ -1,3 +1,4 @@
+import sys
 from meal_planner.database import SessionLocal
 from meal_planner.models.recipe import Recipe
 from meal_planner.models.meal_plan import MealPlan
@@ -37,7 +38,7 @@ def main_menu():
             view_all_ingredients()
         elif choice == "8":
             print("Exiting... Goodbye!")
-            break
+            sys.exit()
         else:
             print("Invalid choice. Please try again.")
 
