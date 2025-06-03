@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from meal_planner.database.setup import Base
+from meal_planner.models.base import Base
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredient"

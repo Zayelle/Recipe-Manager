@@ -52,6 +52,30 @@ meal_planner/
 ### 1. Clone the Repo
 ```bash
 git clone https://github.com/Zayelle/Recipe-Manager.git
-cd meal-planner-cli
+cd Recipe-Manager
+
+2. Install dependencies with Pipenv
+pipenv install
+
+3. Activate the virtual environment
+pipenv shell
+
+4. Initialize the database
+The database will be initialized automatically on first run, or you can manually run the initialization function if needed.
+
+🚀 Running the Application
+Run the CLI interface:
+python main.py
+
+This will launch an interactive menu where you can:
+
+Add/view recipes
+Plan meals for the week
+Generate grocery lists
+
+📝 Notes
+The grocery list export creates a CSV file with aggregated ingredient quantities based on your meal plan.
+
+
 
 

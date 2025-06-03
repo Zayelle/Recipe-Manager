@@ -29,10 +29,10 @@ def generate_grocery_list_from_plan(meal_plan: List['Recipe']) -> Dict[str, Unio
     grocery_list = defaultdict(list)
 
     for recipe in meal_plan:
-        for ingredient in recipe.ingredients:
-            name = ingredient.name
-            qty = ingredient.quantity or "unspecified"
-            grocery_list[name].append(qty)
+        for ingredient_obj, qty in recipe.ingredients:
+            name = ingredient_obj  # Assuming ingredient_obj is an Ingredient instance
+            quantity = qty or "unspecified"
+            grocery_list[name].append(quantity)
 
     combined_grocery = {}
     for name, qty_list in grocery_list.items():

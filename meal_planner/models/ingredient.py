@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from meal_planner.models.base import Base
-from meal_planner.models.recipe_ingredient import RecipeIngredient  # import class, not table
+from meal_planner.models.recipe_ingredient import RecipeIngredient
 
 class Ingredient(Base):
     __tablename__ = 'ingredients'
@@ -15,5 +15,10 @@ class Ingredient(Base):
         cascade="all, delete-orphan"
     )
 
+    @property
+    def recipes(self):
+        return [ri.recipe for ri in self.recipe_ingredients]
+
     def __repr__(self):
         return f"<Ingredient(id={self.id}, name='{self.name}')>"
+
