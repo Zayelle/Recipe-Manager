@@ -27,63 +27,71 @@ def get_or_create_recipe(session, name):
 def seed_sample_data(session):
     print("🌱 Seeding sample recipes and ingredients...")
 
-    # Ingredients
-    rice = get_or_create_ingredient(session, "Rice")
-    chicken = get_or_create_ingredient(session, "Chicken Breast")
-    broccoli = get_or_create_ingredient(session, "Broccoli")
-    eggs = get_or_create_ingredient(session, "Eggs")
-    tomato = get_or_create_ingredient(session, "Tomato")
-    pasta = get_or_create_ingredient(session, "Pasta")
-    cheese = get_or_create_ingredient(session, "Cheese")
+    try:
+        # Clear existing data (for development reset)
+        session.query(RecipeIngredient).delete()
+        session.query(MealPlan).delete()
+        session.commit()
 
-    # Recipes
-    rice_bowl = get_or_create_recipe(session, "Chicken Rice Bowl")
-    tomato_pasta = get_or_create_recipe(session, "Tomato Pasta")
-    omelette = get_or_create_recipe(session, "Veggie Omelette")
+        with session.no_autoflush:
 
-    # RecipeIngredients
-    ri_1 = [
-        RecipeIngredient(ingredient=rice, quantity=200.0),
-        RecipeIngredient(ingredient=chicken, quantity=300.0),
-        RecipeIngredient(ingredient=broccoli, quantity=150.0),
-    ]
-    rice_bowl.recipe_ingredients = ri_1
-    session.add_all(ri_1)
+        # Ingredients
+         rice = get_or_create_ingredient(session, "Rice")
+         chicken = get_or_create_ingredient(session, "Chicken Breast")
+         broccoli = get_or_create_ingredient(session, "Broccoli")
+         eggs = get_or_create_ingredient(session, "Eggs")
+         tomato = get_or_create_ingredient(session, "Tomato")
+         pasta = get_or_create_ingredient(session, "Pasta")
+         cheese = get_or_create_ingredient(session, "Cheese")
 
-    ri_2 = [
-        RecipeIngredient(ingredient=pasta, quantity=250.0),
-        RecipeIngredient(ingredient=tomato, quantity=100.0),
-        RecipeIngredient(ingredient=cheese, quantity=100.0),
-    ]
-    tomato_pasta.recipe_ingredients = ri_2
-    session.add_all(ri_2)
+        # Recipes
+        rice_bowl = get_or_create_recipe(session, "Chicken Rice Bowl")
+        tomato_pasta = get_or_create_recipe(session, "Tomato Pasta")
+        omelette = get_or_create_recipe(session, "Veggie Omelette")
 
-    ri_3 = [
-        RecipeIngredient(ingredient=eggs, quantity=2.0),
-        RecipeIngredient(ingredient=tomato, quantity=100.0),
-        RecipeIngredient(ingredient=broccoli, quantity=150.0),
-    ]
-    omelette.recipe_ingredients = ri_3
-    session.add_all(ri_3)
+        # Clear old relationships if they exist
+        rice_bowl.recipe_ingredients = []
+        tomato_pasta.recipe_ingredients = []
+        omelette.recipe_ingredients = []
 
-    # Add recipes (if not already managed)
-    session.add_all([rice_bowl, tomato_pasta, omelette])
+        # Associate recipe ingredients
+        rice_bowl.recipe_ingredients = [
+            RecipeIngredient(recipe=rice_bowl, ingredient=rice, quantity=200.0),
+            RecipeIngredient(recipe=rice_bowl, ingredient=chicken, quantity=300.0),
+            RecipeIngredient(recipe=rice_bowl, ingredient=broccoli, quantity=150.0),
+        ]
+        tomato_pasta.recipe_ingredients = [
+            RecipeIngredient(recipe=tomato_pasta, ingredient=pasta, quantity=250.0),
+            RecipeIngredient(recipe=tomato_pasta, ingredient=tomato, quantity=100.0),
+            RecipeIngredient(recipe=tomato_pasta, ingredient=cheese, quantity=100.0),
+        ]
+        omelette.recipe_ingredients = [
+            RecipeIngredient(recipe=omelette, ingredient=eggs, quantity=2.0),
+            RecipeIngredient(recipe=omelette, ingredient=tomato, quantity=100.0),
+            RecipeIngredient(recipe=omelette, ingredient=broccoli, quantity=150.0),
+        ]
 
-    # Meal Plans
-    for day, recipe in [
-        ("Monday", rice_bowl),
-        ("Tuesday", tomato_pasta),
-        ("Wednesday", omelette),
-        ("Thursday", rice_bowl),
-        ("Friday", tomato_pasta),
-        ("Saturday", omelette),
-        ("Sunday", rice_bowl),
-    ]:
-        if not session.query(MealPlan).filter_by(day=day).first():
+        # Add all recipes (they cascade recipe_ingredients if relationships are configured correctly)
+        session.add_all([rice_bowl, tomato_pasta, omelette])
+
+        # Meal Plans
+        for day, recipe in [
+            ("Monday", rice_bowl),
+            ("Tuesday", tomato_pasta),
+            ("Wednesday", omelette),
+            ("Thursday", rice_bowl),
+            ("Friday", tomato_pasta),
+            ("Saturday", omelette),
+            ("Sunday", rice_bowl),
+        ]:
             session.add(MealPlan(day=day, recipe=recipe))
 
-    session.commit()
-    print(f"✅ Seeded {session.query(Recipe).count()} recipes, {session.query(Ingredient).count()} ingredients.")
+        session.commit()
+        print(f"✅ Seeded {session.query(Recipe).count()} recipes, {session.query(Ingredient).count()} ingredients.")
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Error seeding sample data: {e}")
+
 
 # Entry point
 if __name__ == "__main__":
