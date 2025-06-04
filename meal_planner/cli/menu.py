@@ -53,8 +53,8 @@ def view_all_recipes():
             for recipe in recipes:
                 print(f"\n📝 {recipe.name}\nInstructions: {recipe.instructions or 'N/A'}")
                 print("Ingredients:")
-                for ingredient, qty in recipe.ingredients:
-                    print(f" - {ingredient.name}: {qty}")
+                for ri in recipe.recipe_ingredients:
+                    print(f" - {ri.ingredient.name}: {ri.quantity}")
 
             export = input("\n📤 Export recipes to CSV? (y/n): ").strip().lower()
             if export == "y":
@@ -228,6 +228,8 @@ def view_all_ingredients():
             print("\n🧂 All Ingredients:")
             for ing in ingredients:
                 print(f"- {ing.name}")
+            for ri in ing.recipe_ingredients:
+                print(f"   Used in: {ri.recipe.name} ({ri.quantity})")
 
             export = input("\n📤 Export ingredients to CSV? (y/n): ").strip().lower()
             if export == "y":
